@@ -1,0 +1,76 @@
+#!/usr/bin/env escript
+-export([main/1]).
+
+main([File_Name]) ->
+    Cur_Dir = filename:dirname(filename:absname(File_Name)),
+    INCLUDE_DIRS = get_include_dirs(Cur_Dir),
+    LIBS = get_libs(Cur_Dir),
+    PARSE_TRANSFORMS = get_parse_transforms(Cur_Dir),
+    ARGS = INCLUDE_DIRS ++ LIBS ++ PARSE_TRANSFORMS,
+    io:format("ARGS = ~p~n" ,[ARGS]),
+    compile:file(File_Name, [warn_obsolete_guard, warn_unused_import,
+                     warn_shadow_vars, warn_export_vars,
+             strong_validation, report] ++ ARGS).
+
+get_include_dirs(Cur_Dir) ->
+    Res = case filelib:is_file(Cur_Dir ++ "/.eflymake") of
+	      true ->
+		  request(Cur_Dir ++ "/.eflymake GET_INCLUDE_DIRS");
+	      false->
+		  request("make GET_INCLUDE_DIRS")
+	  end,			   
+    construct_arg(i, Res).
+
+get_libs(Cur_Dir) ->
+    Res = case filelib:is_file(Cur_Dir ++ "/.eflymake") of
+	      true ->
+		  request(Cur_Dir ++ "/.eflymake GET_INCLUDE_DIRS");
+	      false->
+		  request("make GET_INCLUDE_DIRS")
+	  end,			   
+    construct_arg(i, Res).
+
+get_parse_transforms(_Cur_Dir) ->
+    construct_arg(i, request("make GET_PARSE_TRANSFORMS")).
+
+request(Cmd)->
+    Resp = os:cmd(Cmd),
+    Tokens = string:tokens(Resp, "\n"),    
+    Result = find_resp(Tokens),
+    Result.
+    
+
+find_resp(Resp)->
+    find_resp(Resp, [], start).
+find_resp(_Tokens, Result, found) -> Result;
+find_resp([], Result, _State) -> Result;
+find_resp(["GET_KEY:" ++ Current | Rest], [], start)->
+    [_Key | Tokens] = string:tokens(Current, "["),  
+    find_resp(Rest, Tokens, collect);
+%% skip 
+find_resp([_Current | Rest], [], start)-> find_resp(Rest, [], start);
+find_resp([Current | Rest], Result, collect)->
+    Value = string:strip(Current, left, $ ),	      
+    Stripped = strip_quotes(Value),	      
+    New_Res = Stripped ++ Result,
+    Flag = case string:tokens(Current, "]") of
+	       [_Single] -> collect;
+	       [_Token | _Rest] -> found
+	   end,	       
+    find_resp(Rest, New_Res, Flag).
+    
+    
+construct_arg(Param_Name, Values) ->
+    [{Param_Name, Value} || Value <- Values].
+  
+strip_quotes(Strings)->
+    strip_quotes(string:tokens(Strings, "\\\""),[]).
+strip_quotes([], Result) -> Result;
+strip_quotes([Current | Rest], Result) ->
+     New_Result = case string:strip(Current) of
+		      "" -> Result;
+		      "," -> Result;
+		      Value -> [Value] ++ Result
+		  end,    
+    strip_quotes(Rest, New_Result).
+
