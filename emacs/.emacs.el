@@ -268,5 +268,24 @@
 (when (file-exists-p "~/emacs/etc/track.el")
   (load "~/emacs/etc/track.el"))
 
+(when (file-exists-p "~/emacs/etc/java.el")
+  (load "~/emacs/etc/java.el"))
 
+(when (file-exists-p "~/emacs/deps/multiple-cursors.el")
+  (add-to-list 'load-path "~/emacs/deps/multiple-cursors.el")
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  (global-set-key [(control shift up)] 'mc/mark-previous-like-this)
+  (global-set-key [(control shift down)] 'mc/mark-next-like-this)
+)
+
+(when (file-exists-p "~/emacs/deps/auto-complete")
+  (add-to-list 'load-path "~/emacs/deps/auto-complete")
+  (add-to-list 'load-path "~/emacs/deps/auto-complete/lib/popup/")
+  (require 'auto-complete)
+  (add-hook 'elixir-mode-hook 'auto-complete-mode)
+  (add-hook 'java-mode-hook 'auto-complete-mode))
 
