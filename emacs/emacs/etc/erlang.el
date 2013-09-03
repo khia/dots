@@ -14,12 +14,13 @@
   (setq otp_preffix "/opt/")
   ;;(setq erlang-root-dir (concat otp_preffix otp_version "/lib/erlang/lib/"))
   (setq erlang-root-dir (concat otp_preffix otp_version))
-  (setq erlang-otp-lib (concat otp_preffix otp_version "/lib/erlang/lib/"))
-  (setq erlang_mode_path
+  (when (file-exists-p erlang-root-dir)
+    (setq erlang-otp-lib (concat otp_preffix otp_version "/lib/erlang/lib/"))
+    (setq erlang_mode_path
 	(concat (car (directory-files erlang-otp-lib t "^tools-*")) "/emacs"))
   ;;    (concat (car (directory-files erlang-root-dir t "^tools-*")) "/emacs"))
-  (setq otp_bin (concat otp_preffix otp_version "/lib/erlang/bin/"))
-  (setq otp-man-path (concat erlang-root-dir "/lib/erlang/man")))
+    (setq otp_bin (concat otp_preffix otp_version "/lib/erlang/bin/"))
+    (setq otp-man-path (concat erlang-root-dir "/lib/erlang/man"))))
 
 (defun init-refactorerl ()
   "Set refactorerl configuration."
@@ -145,18 +146,20 @@ makes)."
 
 ;; ========================== MAIN ==============================
 (set-otp-variables)
-;;(message otp-man-path)
-(add-to-list 'load-path erlang_mode_path)
-;;(setq load-path (cons erlang_mode_path load-path))
-(message (concat "Path: " erlang_mode_path " was added to load-path."))
-(add-to-list 'exec-path otp_bin)
-(message (concat "Path: " otp_bin " was added to exec-path."))
-(require 'erlang-start)
-(init-distel)
-(init-refactorerl)
+(when (file-exists-p erlang-root-dir)
+
+  ;;(message otp-man-path)
+  (add-to-list 'load-path erlang_mode_path)
+  ;;(setq load-path (cons erlang_mode_path load-path))
+  (message (concat "Path: " erlang_mode_path " was added to load-path."))
+  (add-to-list 'exec-path otp_bin)
+  (message (concat "Path: " otp_bin " was added to exec-path."))
+  (require 'erlang-start)
+  (init-distel)
+  (init-refactorerl)
+  (message otp-man-path))
 
 ;; ====================== END OF MAIN ===========================
-(message otp-man-path)
 (defun get-erl-man ()
   (interactive)
   (let* ((man-path otp-man-path) ;;“/opt/R11B-5/lib/erlang/man”)
