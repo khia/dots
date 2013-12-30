@@ -1,5 +1,9 @@
 all: emacs/ ~/emacs ~/.emacs.el emacs/etc/priv.el \
+	emacs/deps/auto-complete/*.elc \
+	emacs/deps/*.elc \
 	emacs/deps/elixir/*.elc
+
+emacs/deps/*.el: emacs/deps/multiple-cursors.el
 
 emacs/deps/plantuml.jar:
 	@cd emacs/deps/ && wget http://sourceforge.net/projects/plantuml/files/plantuml.jar/download
