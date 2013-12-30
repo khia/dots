@@ -19,8 +19,8 @@
 (when (file-exists-p "~/emacs/etc/priv.el")
   (load "~/emacs/etc/priv.el"))
 
-(when (file-exists-p "~/emacs/etc/elixir.el")
-  (load "~/emacs/etc/elixir.el"))
+;;(when (file-exists-p "~/emacs/etc/elixir.el")
+;;  (load "~/emacs/etc/elixir.el"))
 
 ;; Access to remote files
 (defun init-tramp ()
