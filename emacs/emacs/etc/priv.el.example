@@ -1,8 +1,0 @@
-(defun set-personal-variables ()
-"Set personal variables."
- ;; do settings here
- (set 'user-full-name "Your Name")
- (setq user-mail-address "your.email@server.org")
- (message "Personal variables set"))
-
-(set-personal-variables)

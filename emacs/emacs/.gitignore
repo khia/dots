@@ -1,7 +1,0 @@
-etc/priv.el
-\#*\#
-*.elc
-backups
-autosaves
-personal.el
-deps
